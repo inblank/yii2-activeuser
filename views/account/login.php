@@ -1,7 +1,6 @@
 <?php
 /**
  * @var \inblank\activeuser\models\forms\LoginForm $model
- * @var \inblank\activeuser\Module $module
  */
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -40,23 +39,23 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::submitButton(Yii::t('activeuser_general', 'Sign in'), [
             'class' => 'button', 'tabindex' => '3'
         ]) ?>
-
-        <?php if ($module->enablePasswordRestore): ?>
+        <?php ActiveForm::end(); ?>
+    </div>
+    <div class="loginpanel__links">
+        <?php if ($model->module->enablePasswordRestore): ?>
             <div class="loginpanel__recovery">
                 <?= Html::a(Yii::t('activeuser_general', 'Forgot password?'), ['/activeuser/account/recovery'], ['tabindex' => '5']) ?>
             </div>
         <?php endif; ?>
-
-        <?php ActiveForm::end(); ?>
+        <?php if ($model->module->enableRegistration): ?>
+            <div class="loginpanel__register">
+                <?= Html::a(Yii::t('activeuser_general', "Don't have an account? Sign up!"), ['/activeuser/account/register']) ?>
+            </div>
+        <?php endif ?>
+        <?php if ($model->module->enableConfirmation): ?>
+            <div class="loginpanel__resend">
+                <?= Html::a(Yii::t('activeuser_general', "Didn't receive confirmation message?"), ['/activeuser/account/resend']) ?>
+            </div>
+        <?php endif ?>
     </div>
-    <?php if ($module->enableConfirmation): ?>
-        <div class="loginpanel__resend">
-            <?= Html::a(Yii::t('activeuser_general', "Didn't receive confirmation message?"), ['/activeuser/account/resend']) ?>
-        </div>
-    <?php endif ?>
-    <?php if ($module->enableRegistration): ?>
-        <div class="loginpanel__register">
-            <?= Html::a(Yii::t('activeuser_general', "Don't have an account? Sign up!"), ['/activeuser/account/register']) ?>
-        </div>
-    <?php endif ?>
 </div>
