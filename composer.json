@@ -1,6 +1,6 @@
 {
     "name": "inblank/yii2-activeuser",
-    "type": "yii2-module",
+    "type": "yii2-extension",
     "description": "Yii2 module inblank/yii2-activeuser",
     "keywords": [
         "yii2",
