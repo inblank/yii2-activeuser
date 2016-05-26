@@ -190,6 +190,7 @@ class UserTest extends TestCase
     public function testRestore()
     {
         $this->specify("we have register and confirm user", function () {
+            /** @var Module $module */
             $module = Yii::$app->modules['activeuser'];
 
             $module->enableRegistration = true;
@@ -205,6 +206,11 @@ class UserTest extends TestCase
             expect('we must see `error` error', $user->getErrors())->hasKey('error');
             expect('we can confirm user', $user->confirm())->true();
 
+            $module->enablePasswordRestore = false;
+            expect("we can't request restore if disabled", $user->restore())->false();
+            expect('we must see `error` error', $user->getErrors())->hasKey('error');
+
+            $module->enablePasswordRestore = true;
             MailMock::$mails = [];
             expect('we can request restore', $user->restore())->true();
 

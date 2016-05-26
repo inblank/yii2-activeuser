@@ -378,6 +378,10 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
      */
     public function restore()
     {
+        if (!$this->module->enablePasswordRestore) {
+            $this->addError('error', Yii::t('activeuser_general', 'Password restore by email is disabled'));
+            return false;
+        }
         if ($this->isBlocked() || !$this->isConfirmed()) {
             $this->addError('error', Yii::t('activeuser_general', 'You cannot start restore procedure'));
             return false;

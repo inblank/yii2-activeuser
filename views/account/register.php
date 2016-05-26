@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'class' => 'button', 'tabindex' => '3'
         ]) ?>
 
-        <?php if ($module->enablePasswordRecovery): ?>
+        <?php if ($module->enablePasswordRestore): ?>
             <div class="registerpanel__login">
                 <?= Html::a(Yii::t('activeuser_general', 'Already register? Sign in!'), ['/activeuser/account/login'], ['tabindex' => '4']) ?>
             </div>

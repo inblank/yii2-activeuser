@@ -47,8 +47,10 @@ class Module extends BaseModule
     public $enableConfirmation = true;
     /** @var bool whether to enable send notification email about register to the user */
     public $enableRegistrationEmail = true;
+    /** @var bool whether to enable password restore by email */
+    public $enablePasswordRestore = true;
     /**
-     * @var bool whether to automaticaly generate password on restore
+     * @var bool whether to automatically generate password on restore
      * Password will be generated only if user password is empty
      */
     public $generatePassOnRestore = true;
@@ -64,15 +66,13 @@ class Module extends BaseModule
      * If true, user's email used for send unique URL link to enter on site
      * @var bool
      */
-    public $loginByUniqueURL = false;
+    public $loginByEmail = false;
     /** @var int the time you want the user will be remembered without asking for credentials */
     public $rememberTime = 2592000;
     /** @var int the time before a confirmation token becomes invalid */
     public $confirmationTime = 86400; // one month
     /** @var int the time before a recovery token becomes invalid */
     public $recoveryTime = 10800; // one day
-        /** @var bool whether to enable password recovery by email */
-    public $enablePasswordRecovery = true; // 3 hours
     /** @var array Model map */
     public $modelMap = [];
     /**
