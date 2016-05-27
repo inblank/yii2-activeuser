@@ -169,7 +169,6 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
             ['email', 'string', 'max' => 200],
             ['email', 'email'],
             ['name', 'string', 'max' => 200],
-            ['name', 'default', 'value' => ''],
             ['name', function () {
                 if (in_array('name', $this->module->registrationFields) && empty($this->name)) {
                     $this->addError('name', Yii::t('activeuser_general', 'Name cannot be blank.'));
@@ -195,6 +194,9 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
             ['registered_at', 'default', 'value' => function () {
                 return date('Y-m-d H:i:s');
             }],
+            // rules below for prevent nullable value of attributes
+            [['name', 'avatar'], 'default', 'value' => ''],
+            [['gender','token_created_at'], 'default', 'value'=>0],
         ];
     }
 

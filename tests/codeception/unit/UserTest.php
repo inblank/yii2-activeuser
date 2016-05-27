@@ -31,6 +31,35 @@ class UserTest extends TestCase
     }
 
     /**
+     * Registration test with `null` data for User model
+     */
+    public function testRegistrationNull()
+    {
+        $this->module = Yii::$app->getModule('activeuser');
+        $this->module->enableRegistration = true;
+        $this->module->enableConfirmation = true;
+        $this->module->registrationFields = [];
+
+        $this->specify("we have register with null data", function () {
+            $user = new User([
+                'status' => null,
+                'email' => 'user@example.com',
+                'pass_hash' => null,
+                'name' => null,
+                'gender' => null,
+                'birth' => null,
+                'avatar' => null,
+                'access_token' => null,
+                'auth_key' => null,
+                'token' => null,
+                'token_created_at' => null,
+                'registered_at' => null,
+            ]);
+            expect("we can register user with correct email and null data", $user->register())->true();
+        });
+    }
+
+    /**
      * Registration test for User model
      */
     public function testRegistration()
@@ -268,8 +297,8 @@ class UserTest extends TestCase
             expect('we must see `error` error', $user->getErrors())->hasKey('error');
         });
 
-        $this->specify("try to restore blocked user", function(){
-            $user = User::findOne(['status'=>User::STATUS_BLOCKED]);
+        $this->specify("try to restore blocked user", function () {
+            $user = User::findOne(['status' => User::STATUS_BLOCKED]);
             expect("we must have blocked user", $user)->notNull();
             expect("we cannot restore on blocked user", $user->restore())->false();
             expect('we must see `error`', $user->getErrors())->hasKey('error');
