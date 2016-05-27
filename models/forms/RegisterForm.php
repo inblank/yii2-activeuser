@@ -6,22 +6,23 @@ use inblank\activeuser\models\User;
 use inblank\activeuser\traits\CommonTrait;
 use yii;
 use yii\base\Model;
-use yii\helpers\ArrayHelper;
 
 class RegisterForm extends Model
 {
     use CommonTrait;
 
-    const SCENARIO_EMAIL = 1;
-
     /**
-     * @var string user email for login
+     * @var string user email for register
      */
     public $email;
     /**
-     * @var string user name
+     * @var string user name for register
      */
     public $name;
+    /**
+     * @var string user password for register
+     */
+    public $password;
 
     /** @inheritdoc */
     public function attributeLabels()
@@ -29,20 +30,8 @@ class RegisterForm extends Model
         return [
             'email' => Yii::t('activeuser_general', 'Email'),
             'name' => Yii::t('activeuser_general', 'Name'),
+            'password' => Yii::t('activeuser_general', 'Password'),
         ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function scenarios()
-    {
-        return ArrayHelper::merge(
-            parent::scenarios(),
-            [
-                self::SCENARIO_DEFAULT => ['email', 'name', 'password'],
-                self::SCENARIO_EMAIL => ['email'],
-            ]);
     }
 
     /**
@@ -51,23 +40,32 @@ class RegisterForm extends Model
     public function rules()
     {
         return [
-            [['email', 'name'], 'required', 'on'=>self::SCENARIO_DEFAULT],
-            ['email', 'required', 'on'=>self::SCENARIO_EMAIL],
-            ['email', 'unique'],
+            ['email', 'required'],
+            ['email', 'email'],
+            ['email', 'unique', 'targetClass' => User::className(), 'targetAttribute' => 'email'],
+            ['name', 'required', 'when' => function () {
+                return $this->getModule()->isFieldForRegister('name');
+            }],
+            ['password', 'required', 'when' => function () {
+                return $this->getModule()->isFieldForRegister('password');
+            }],
+            ['password', 'string', 'length' => [6, 20], 'skipOnEmpty' => true],
         ];
     }
 
-    public function register(){
+    /**
+     * Registration
+     * @return bool
+     * @throws yii\base\InvalidConfigException
+     */
+    public function register()
+    {
         if (!$this->validate()) {
             return false;
         }
-
         /** @var User $user */
         $user = Yii::createObject(User::className());
-        $user->setAttributes($this->attributes());
-        if (!$user->register()) {
-            return false;
-        }
-        return true;
+        $user->setAttributes($this->getAttributes());
+        return $user->register();
     }
 }

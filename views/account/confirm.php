@@ -1,0 +1,1 @@
+Email was confirmed successful.

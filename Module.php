@@ -105,6 +105,7 @@ class Module extends BaseModule
     public function sendMessage($type, $params)
     {
         if ($this->mailer === null) {
+            /** @var yii\swiftmailer\Mailer mailer */
             $this->mailer = Yii::$app->mailer;
             $this->mailer->viewPath = $this->getViewPath() . '/mails';
             $this->mailer->getView()->theme = Yii::$app->view->theme;
@@ -147,10 +148,27 @@ class Module extends BaseModule
     }
 
     /**
+     * Check that registration enabled
+     * @return bool
+     */
+    public function isRegistrationEnabled(){
+        return $this->enableRegistration;
+    }
+    /**
      * @inheritdoc
      */
     public function getViewPath()
     {
         return defined('IS_BACKEND') ? $this->getBasePath() . DIRECTORY_SEPARATOR . 'views/_backend' : parent::getViewPath();
+    }
+
+    /**
+     * Check that field need for register
+     * @param string $name field name
+     * @return bool
+     */
+    public function isFieldForRegister($name)
+    {
+        return in_array($name, $this->registrationFields);
     }
 }

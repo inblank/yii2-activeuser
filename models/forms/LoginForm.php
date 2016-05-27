@@ -29,7 +29,7 @@ class LoginForm extends Model
      * Founded user
      * @var User
      */
-    protected $user;
+    protected $user = false;
 
     /** @inheritdoc */
     public function attributeLabels()
@@ -48,30 +48,20 @@ class LoginForm extends Model
         return [
             [['email', 'password'], 'required'],
             ['password', function () {
-                if (empty($this->user) || !(new Security())->validatePassword($this->password, $this->user->pass_hash)) {
+                if ($this->getUser()===null || !(new Security())->validatePassword($this->password, $this->getUser()->pass_hash)) {
                     $this->addError('password', Yii::t('activeuser_general', 'Invalid email or password'));
                 }
             }],
             ['email', function () {
-                if (!empty($this->user)) {
-                    if (!$this->user->isConfirmed()) {
+                if ($this->getUser()!==null) {
+                    if (!$this->getUser()->isConfirmed()) {
                         $this->addError('password', Yii::t('activeuser_general', 'You need to confirm your email address'));
-                    } elseif ($this->user->isBlocked()) {
+                    } elseif ($this->getUser()->isBlocked()) {
                         $this->addError('password', Yii::t('activeuser_general', 'Your account has been blocked'));
                     }
                 }
             }],
         ];
-    }
-
-    /** @inheritdoc */
-    public function beforeValidate()
-    {
-        if (!parent::beforeValidate()) {
-            return false;
-        }
-        $this->user = empty($this->email) ? null : User::findOne(['email' => $this->email]);
-        return true;
     }
 
     /**
@@ -81,8 +71,15 @@ class LoginForm extends Model
     public function login()
     {
         if ($this->validate()) {
-            return Yii::$app->getUser()->login($this->user, $this->remember ? $this->module->rememberTime : 0);
+            return Yii::$app->getUser()->login($this->getUser(), $this->remember ? $this->module->rememberTime : 0);
         }
         return false;
+    }
+
+    protected function getUser(){
+        if($this->user===false){
+            $this->user = empty($this->email) ? null : User::findOne(['email' => $this->email]);
+        }
+        return $this->user;
     }
 }

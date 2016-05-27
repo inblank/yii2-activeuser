@@ -29,7 +29,7 @@ trait CommonTrait{
             if (!Yii::$app->hasModule('activeuser')) {
                 throw new InvalidConfigException('You must configure module as `activeuser`');
             }
-            $this->_module = Yii::$app->modules['activeuser'];
+            $this->_module = Yii::$app->getModule('activeuser');
         }
         return $this->_module;
     }

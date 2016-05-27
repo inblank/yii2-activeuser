@@ -162,12 +162,14 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
      */
     public function rules()
     {
+        // todo check password length
         return [
             [['email', 'password'], 'required'],
             ['email', 'unique'],
             ['email', 'string', 'max' => 200],
             ['email', 'email'],
             ['name', 'string', 'max' => 200],
+            ['name', 'default', 'value' => ''],
             ['name', function () {
                 if (in_array('name', $this->module->registrationFields) && empty($this->name)) {
                     $this->addError('name', Yii::t('activeuser_general', 'Name cannot be blank.'));
@@ -335,6 +337,9 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
         if (!$this->save()) {
             return false;
         }
+        //codecept_debug(get_class(Yii::$app));
+        //$obj = Yii::createObject(ApplicationMock::className());
+        //codecept_debug($obj->db->dsn);
         if ($this->module->enableConfirmation) {
             $this->generateToken();
             // send email with confirm link

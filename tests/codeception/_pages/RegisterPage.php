@@ -18,14 +18,33 @@ class RegisterPage extends BasePage
 
     /**
      * Register
-     * @param string $email email for register
-     * @param string $name name for register
+     * @param array $params
      */
-    public function register($email, $name)
+    public function register($params=[])
     {
-        $formName = strtolower(Yii::createObject(RegisterForm::className())->formName());
-        $this->actor->fillField('#'.$formName.'-email', $email);
-        $this->actor->fillField('#'.$formName.'-name', $name);
+        foreach(['email','name','password'] as $fieldName) {
+            if (array_key_exists($fieldName, $params)) {
+                $this->actor->fillField($this->fullFieldId($fieldName), $params[$fieldName]);
+            }
+        }
         $this->actor->click('Register');
+    }
+
+    public function fullFieldId($name)
+    {
+        return '#'.strtolower(Yii::createObject(RegisterForm::className())->formName().'-'.$name);
+    }
+
+    public function getUrlFromEmail($linkType, $messageText)
+    {
+        preg_match_all("/href.+\"(.*)\">/imsU", $messageText, $m);
+        foreach($m[1] as $url) {
+            $url = htmlspecialchars_decode(rawurldecode(quoted_printable_decode($url)));
+            parse_str(parse_url($url, PHP_URL_QUERY), $url);
+            if(!empty($url['r']) && strpos($url['r'], $linkType)!==false){
+                return $url;
+            }
+        }
+        return false;
     }
 }
