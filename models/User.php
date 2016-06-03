@@ -196,7 +196,7 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
             }],
             // rules below for prevent nullable value of attributes
             [['name', 'avatar'], 'default', 'value' => ''],
-            [['gender','token_created_at'], 'default', 'value'=>0],
+            [['gender', 'token_created_at'], 'default', 'value' => 0],
         ];
     }
 
@@ -320,6 +320,38 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
     }
 
     /**
+     * User creation
+     * For create the user you always must set attributes `email`, `password` and `name`
+     * @param bool $sendEmail whether to send email about registration
+     * @return bool
+     */
+    public function create($sendEmail = false)
+    {
+        $oldRegisterFields = $this->module->registrationFields;
+        $this->module->registrationFields = ['password', 'name'];
+        if ($this->getIsNewRecord() == false) {
+            throw new \RuntimeException('Calling "' . __CLASS__ . '::' . __METHOD__ . '" on existing user');
+        }
+        if (empty($this->password)) {
+            // password autogenerate
+            $this->password = $this->generatePassword();
+        }
+        $this->status = self::STATUS_ACTIVE;
+        $isCreated = $this->save();
+        $this->module->registrationFields = $oldRegisterFields;
+        if (!$isCreated) {
+            return false;
+        }
+        if ($sendEmail) {
+            // send email with registration congratulation
+            $this->module->sendMessage('register', [
+                'user' => $this,
+            ]);
+        }
+        return true;
+    }
+
+    /**
      * User registration
      * @return bool
      */
@@ -339,9 +371,6 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
         if (!$this->save()) {
             return false;
         }
-        //codecept_debug(get_class(Yii::$app));
-        //$obj = Yii::createObject(ApplicationMock::className());
-        //codecept_debug($obj->db->dsn);
         if ($this->module->enableConfirmation) {
             $this->generateToken();
             // send email with confirm link
