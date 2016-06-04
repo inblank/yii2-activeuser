@@ -15,6 +15,9 @@ return [
     'Gender' => 'Пол',
     'Birth' => 'Дата рождения',
 
+    'Error' => 'Ошибка',
+    'Errors' => 'Ошибки',
+
     'Remember me next time' => 'Запомнить меня',
     'Invalid email or password' => 'Неверный email или пароль',
     'Name cannot be blank.' => 'Имя не может быть пустым',
@@ -43,4 +46,7 @@ return [
     'You cannot start restore procedure' => 'Вы не можете начать процедуру восстановления',
 
     'Password restore by email is disabled'=>'Восстановление пароля по email отключено',
+
+    'You are blocked' => 'Вы заблокированы',
+    'You are unblocked' => 'Вы разблокированы',
 ];

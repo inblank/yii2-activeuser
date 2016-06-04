@@ -43,7 +43,9 @@ class Bootstrap implements yii\base\BootstrapInterface
                 $module->modelMap[$name] = $modelName;
             }
             if ($app instanceof ConsoleApplication) {
-                $module->controllerNamespace = 'inblank\activeuser\commands';
+                $app->controllerMap['activeuser'] = [
+                    'class' => 'inblank\activeuser\commands\DefaultController',
+                ];
             } else {
                 // init user
                 Yii::$container->set('yii\web\User', [
