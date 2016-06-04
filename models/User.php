@@ -209,6 +209,7 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
             'id' => 'ID',
             'status' => Yii::t('activeuser_general', 'Status'),
             'email' => Yii::t('activeuser_general', 'Email'),
+            'password' => Yii::t('activeuser_general', 'Password'),
             'pass_hash' => Yii::t('activeuser_general', 'Password hash'),
             'name' => Yii::t('activeuser_general', 'Name'),
             'gender' => Yii::t('activeuser_general', 'Gender'),
