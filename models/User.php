@@ -506,23 +506,40 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
             $this->addError('token', Yii::t('activeuser_general', 'You token was expired'));
             return false;
         }
+        if (empty($this->password) && !$this->module->generatePassOnRestore) {
+            $this->addError('password', Yii::t('activeuser_general', 'Password cannot be blank'));
+            return false;
+        }
+        $this->status = self::STATUS_ACTIVE;
+        $this->newPassword();
+        return true;
+    }
+
+    /**
+     * Set new password
+     * @param bool $sendEmail whether to send email about password change
+     * @throws yii\base\Exception
+     * @throws yii\base\InvalidConfigException
+     */
+    public function newPassword($sendEmail = null)
+    {
         if (empty($this->password)) {
-            if (!$this->module->generatePassOnRestore) {
-                $this->addError('password', Yii::t('activeuser_general', 'Password cannot be blank'));
-                return false;
-            }
             $this->password = $this->generatePassword();
         }
         $this->updateAttributes([
             'pass_hash' => Yii::$app->getSecurity()->generatePasswordHash($this->password),
             'token' => '',
             'token_created_at' => 0,
-            'status' => self::STATUS_ACTIVE,
+            'status' => $this->status,
         ]);
-        $this->module->sendMessage('passchanged', [
-            'user' => $this,
-        ]);
-        return true;
+        if ($sendEmail === null) {
+            $sendEmail = $this->getModule()->enableNewPasswordEmail;
+        }
+        if ($sendEmail) {
+            $this->module->sendMessage('passchanged', [
+                'user' => $this,
+            ]);
+        }
     }
 
     /**

@@ -55,6 +55,8 @@ class Module extends BaseModule
     public $enableUnblockingEmail = true;
     /** @var bool whether to enable password restore by email */
     public $enablePasswordRestore = true;
+    /** @var bool whether to enable send new password email */
+    public $enableNewPasswordEmail = true;
     /**
      * @var bool whether to automatically generate password on restore
      * Password will be generated only if user password is empty
