@@ -113,6 +113,66 @@ class UserTest extends TestCase
     }
 
     /**
+     * Blocking test for User model
+     */
+    public function testBlocking()
+    {
+        $this->module = Yii::$app->getModule('activeuser');
+        $this->module->enableBlockingEmail = true;
+        $this->specify("we have block user", function () {
+            /** @var User $user */
+            $user = $this->getFixture('user')->getModel('active');
+            MailMock::$mails = [];
+            expect("we can block user", $user->block())->true();
+            expect("we should not see the email about blocking", count(MailMock::$mails))->equals(1);
+        });
+
+        $this->specify("we have block already blocked user", function () {
+            /** @var User $user */
+            $user = $this->getFixture('user')->getModel('blocked');
+            expect("we can't block already blocked user", $user->block())->false();
+        });
+
+        $this->specify("we have block unconfirmed user", function () {
+            /** @var User $user */
+            $user = $this->getFixture('user')->getModel('unconfirmed');
+            expect("we can't block unconfirmed user", $user->block())->false();
+        });
+
+        $this->module->enableUnblockingEmail = true;
+        $this->specify("we have unblock blocked user", function () {
+            /** @var User $user */
+            $user = $this->getFixture('user')->getModel('blocked');
+            MailMock::$mails = [];
+            expect("we can unblock blocked user", $user->unblock())->true();
+            expect("we should see the email about unblocking", count(MailMock::$mails))->equals(1);
+        });
+
+        $this->specify("we have unblock not blocked user", function () {
+            /** @var User $user */
+            $user = $this->getFixture('user')->getModel('unconfirmed');
+            expect("we can't unblock not blocked user", $user->unblock())->false();
+            expect("we should see the email about unblocking", count(MailMock::$mails))->equals(1);
+        });
+
+        $this->specify("we have unblock user override mail setting", function () {
+            /** @var User $user */
+            $user = $this->getFixture('user')->getModel('active');
+            MailMock::$mails = [];
+            expect("we can unblock user", $user->unblock(false))->true();
+            expect("we should not see the email about unblocking", count(MailMock::$mails))->equals(0);
+        });
+
+        $this->specify("we have block user override global email setting", function () {
+            /** @var User $user */
+            $user = $this->getFixture('user')->getModel('active');
+            MailMock::$mails = [];
+            expect("we can block user", $user->block(false))->true();
+            expect("we should not see the email about registration", count(MailMock::$mails))->equals(0);
+        });
+    }
+
+    /**
      * Registration test for User model
      */
     public function testRegistration()

@@ -28,14 +28,16 @@ class Module extends BaseModule
         'confirm' => 'confirm',
         'register' => 'register',
         'restore' => 'restore',
-        'passchanged'=>'passchanged',
+        'passchanged' => 'passchanged',
+        'block' => 'block',
+        'unblock' => 'unblock',
     ];
     /** @var bool whether to enable user registration */
     public $enableRegistration = true;
     /**
      * List of fields used for registration.
      * Email is always used and can be omitted.
-     * If you not specify password, they will be generated automaticaly
+     * If you not specify password, they will be generated automatically
      * You can specify: password, name, gender, birth
      * if you specify `password` or `name` they required for fill.
      * `gender` and `birth` is always optional.
@@ -47,6 +49,10 @@ class Module extends BaseModule
     public $enableConfirmation = true;
     /** @var bool whether to enable send notification email about register to the user */
     public $enableRegistrationEmail = true;
+    /** @var bool whether to enable send notification email about user blocking */
+    public $enableBlockingEmail = true;
+    /** @var bool whether to enable send notification email about user unblocking */
+    public $enableUnblockingEmail = true;
     /** @var bool whether to enable password restore by email */
     public $enablePasswordRestore = true;
     /**
@@ -135,6 +141,14 @@ class Module extends BaseModule
                     $message->setSubject(Yii::t('activeuser_general', 'Password was changed'));
                 }
                 break;
+            case 'block':
+                $message = $this->mailer->compose($this->mailViews[$type], $params);
+                $message->setSubject(Yii::t('activeuser_general', 'You are blocked'));
+                break;
+            case 'unblock':
+                $message = $this->mailer->compose($this->mailViews[$type], $params);
+                $message->setSubject(Yii::t('activeuser_general', 'You are unblocked'));
+                break;
         }
         if (!empty($message)) {
             $user = $params['user'];
@@ -151,9 +165,11 @@ class Module extends BaseModule
      * Check that registration enabled
      * @return bool
      */
-    public function isRegistrationEnabled(){
+    public function isRegistrationEnabled()
+    {
         return $this->enableRegistration;
     }
+
     /**
      * @inheritdoc
      */

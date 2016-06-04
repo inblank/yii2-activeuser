@@ -442,6 +442,56 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
     }
 
     /**
+     * Block user
+     * @param bool $sendMail whether to send confirmation email about blocking.
+     * If null, use global setting Module::$enableBlockingEmail
+     * @return bool return false if user already blocked or not confirmed
+     */
+    public function block($sendMail = null)
+    {
+        if ($this->isBlocked() || !$this->isConfirmed()) {
+            return false;
+        }
+        if ($sendMail === null) {
+            $sendMail = $this->module->enableBlockingEmail;
+        }
+        $this->updateAttributes([
+            'status' => self::STATUS_BLOCKED
+        ]);
+        if ($sendMail) {
+            $this->module->sendMessage('block', [
+                'user' => $this,
+            ]);
+        }
+        return true;
+    }
+
+    /**
+     * Unblock user
+     * @param bool $sendMail whether to send confirmation email about unblocking.
+     * If null, use global setting Module::$enableUnblockingEmail
+     * @return bool return false if user not blocked
+     */
+    public function unblock($sendMail = null)
+    {
+        if (!$this->isBlocked()) {
+            return false;
+        }
+        if ($sendMail === null) {
+            $sendMail = $this->module->enableBlockingEmail;
+        }
+        $this->updateAttributes([
+            'status' => self::STATUS_ACTIVE
+        ]);
+        if ($sendMail) {
+            $this->module->sendMessage('unblock', [
+                'user' => $this,
+            ]);
+        }
+        return true;
+    }
+
+    /**
      * Change the user password
      * @return bool
      */
