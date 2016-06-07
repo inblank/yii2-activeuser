@@ -337,14 +337,19 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
         if ($this->getIsNewRecord() == false) {
             throw new \RuntimeException('Calling "' . __CLASS__ . '::' . __METHOD__ . '" on existing user');
         }
+        $generatedPassword = false;
         if (empty($this->password)) {
             // password autogenerate
+            $generatedPassword = true;
             $this->password = $this->generatePassword();
         }
         $this->status = self::STATUS_ACTIVE;
         $isCreated = $this->save();
         $this->module->registrationFields = $oldRegisterFields;
         if (!$isCreated) {
+            if ($generatedPassword) {
+                $this->password = null;
+            }
             return false;
         }
         if ($sendEmail) {
