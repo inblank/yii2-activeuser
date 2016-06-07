@@ -31,6 +31,10 @@ use yii\web\IdentityInterface;
  * @property int $token_created_at the time when the token was created
  * @property string $registered_at user registration date
  *
+ * By getters:
+ * @property $statusText user status as text
+ * @property $genderText user gender as text
+ *
  * Relations:
  * @property Profile $profile user profile data
  */
@@ -551,4 +555,81 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
         return $this->status === self::STATUS_RESTORE;
     }
 
+    /**
+     * Get user status as text
+     * @param string $status status value. If not set, get from model
+     * @return null|string
+     */
+    public function getStatusText($status = null)
+    {
+        if ($status === null) {
+            $status = $this->status;
+        }
+        switch ($status) {
+            case self::STATUS_ACTIVE:
+                $statusText = 'Active';
+                break;
+            case self::STATUS_BLOCKED:
+                $statusText = 'Blocked';
+                break;
+            case self::STATUS_CONFIRM:
+                $statusText = 'Confirm';
+                break;
+            case self::STATUS_RESTORE:
+                $statusText = 'Restore';
+                break;
+            default:
+                return null;
+        }
+        return Yii::t('activeuser_general', $statusText);
+    }
+
+    /**
+     * Get status list as array
+     * @return array
+     */
+    public function statusesList()
+    {
+        return [
+            self::STATUS_ACTIVE => $this->getStatusText(self::STATUS_ACTIVE),
+            self::STATUS_BLOCKED => $this->getStatusText(self::STATUS_BLOCKED),
+            self::STATUS_CONFIRM => $this->getStatusText(self::STATUS_CONFIRM),
+            self::STATUS_RESTORE => $this->getStatusText(self::STATUS_RESTORE),
+        ];
+    }
+
+    /**
+     * Get user gender as text
+     * @param int $gender gender value. If not set, get from model
+     * @return null|string
+     */
+    public function getGenderText($gender = null)
+    {
+        if ($gender === null) {
+            $gender = $this->gender;
+        }
+        switch ($gender) {
+            case self::MALE:
+                $genderText = 'Men';
+                break;
+            case self::FEMALE:
+                $genderText = 'Women';
+                break;
+            default:
+                return null;
+        }
+        return Yii::t('activeuser_general', $genderText);
+    }
+
+    /**
+     * Get gender list as array
+     * @return array
+     */
+    public function gendersList()
+    {
+        return [
+            self::MALE => $this->getGenderText(self::MALE),
+            self::FEMALE => $this->getGenderText(self::FEMALE),
+        ];
+    }
 }
