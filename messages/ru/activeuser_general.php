@@ -30,9 +30,6 @@ return [
 
     'Password restore request' => 'Запрос на восстановление пароля',
 
-    'Register' => 'Регистрация',
-    'Already register? Sign in!' => 'Уже зарегистрированы? Войдите!',
-
     'Thank you for register on site' => 'Спасибо за регистрацию на сайте',
     'Email address confirmation needed' => 'Требуется подтверждение email адреса',
 
