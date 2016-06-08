@@ -8,4 +8,9 @@ return [
     "Don't have an account? Sign up!" => "Нет аккаунта? Зарегистрируйтесь!",
 
     'Already register? Sign in!' => 'Уже зарегистрированы? Войдите!',
+
+    'Resend confirm message' => 'Повтор сообщения подтверждения',
+    'Resend message' => 'Отправить сообщение',
+    'Confirmation message was sent to {email}' =>
+        'Сообщение с подтверждением было отправлено на {email}',
 ];

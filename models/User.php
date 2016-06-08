@@ -637,4 +637,17 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
             self::FEMALE => $this->getGenderText(self::FEMALE),
         ];
     }
+
+    /**
+     * Resend confirmation message
+     */
+    public function resend()
+    {
+        if ($this->getModule()->enableConfirmation && !$this->getIsNewRecord() && $this->status === self::STATUS_CONFIRM) {
+            $this->generateToken();
+            $this->getModule()->sendMessage('confirm', [
+                'user' => $this,
+            ]);
+        }
+    }
 }

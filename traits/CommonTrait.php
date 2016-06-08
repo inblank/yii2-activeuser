@@ -15,13 +15,13 @@ use yii\base\InvalidConfigException;
 trait CommonTrait{
     /**
      * Module instance
-     * @var Module
+     * @var \inblank\activeuser\Module
      */
     protected $_module;
 
     /**
      * Get module instance
-     * @return Module
+     * @return \inblank\activeuser\Module
      * @throws InvalidConfigException
      */
     public function getModule(){
