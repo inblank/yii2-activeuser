@@ -13,4 +13,14 @@ return [
     'Resend message' => 'Отправить сообщение',
     'Confirmation message was sent to {email}' =>
         'Сообщение с подтверждением было отправлено на {email}',
+
+    'Password reset' => 'Пароль изменен',
+    'Your password successful reset'=>'Ваш пароль успешно изменен',
+    'Restore forgotten password'=>'Восстановить забытый пароль',
+    'Send message'=>'Отправить сообщение',
+    'Instruction was sent' => 'Инструкции отправлены',
+    'Instructions to restore password have been sent to {email}' =>
+        'Инструкции по восстановлению пароля были высланы на {email}',
+    'Change password' => 'Изменить пароль',
+    'New password enter' => 'Ввод нового пароля',
 ];
