@@ -41,4 +41,5 @@ return [
 
     'You are blocked' => 'Вы заблокированы',
     'You are unblocked' => 'Вы разблокированы',
+    'Password was changed'=>'Пароль изменен',
 ];
