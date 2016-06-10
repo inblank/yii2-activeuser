@@ -128,7 +128,7 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
             $this->addError('error', Yii::t('activeuser_general', 'User already confirmed'));
             return false;
         }
-        if ($this->isTokenExpired($this->module->confirmationTime)) {
+        if ($this->isConfirmTokenExpired()) {
             $this->addError('token', Yii::t('activeuser_general', 'You token was expired'));
             return false;
         }
@@ -153,12 +153,31 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
     }
 
     /**
-     * @param int $timeToExpire checks that the token was expired
+     * Checks that the token was expired
+     * @param int $timeToExpire time
      * @return bool
      */
     public function isTokenExpired($timeToExpire)
     {
         return $this->token_created_at + $timeToExpire < time();
+    }
+
+    /**
+     * Checks that the confirmation token was expired
+     * @return bool
+     */
+    public function isConfirmTokenExpired()
+    {
+        return $this->isTokenExpired($this->getModule()->confirmationTime);
+    }
+
+    /**
+     * Checks that the restore token was expired
+     * @return bool
+     */
+    public function isRestoreTokenExpired()
+    {
+        return $this->isTokenExpired($this->getModule()->restoreTime);
     }
 
     /**
@@ -511,7 +530,7 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
             $this->addError('error', Yii::t('activeuser_general', 'User not request restore procedure'));
             return false;
         }
-        if ($this->isTokenExpired($this->module->recoveryTime)) {
+        if ($this->isRestoreTokenExpired()) {
             $this->addError('token', Yii::t('activeuser_general', 'You token was expired'));
             return false;
         }

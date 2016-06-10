@@ -80,7 +80,7 @@ class Module extends BaseModule
     /** @var int the time before a confirmation token becomes invalid */
     public $confirmationTime = 86400; // one month
     /** @var int the time before a recovery token becomes invalid */
-    public $recoveryTime = 10800; // one day
+    public $restoreTime = 10800; // one day
     /** @var array Model map */
     public $modelMap = [];
     /**
