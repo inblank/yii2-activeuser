@@ -2,6 +2,7 @@
 return [
     'Sign in' => 'Авторизация',
     'Register' => 'Регистрация',
+    'Confirm'=>'Подтверждение',
 
     'Forgot password?' => 'Забыли пароль?',
     "Didn't receive confirmation message?" => "Не получили письмо-подтверждение?",
@@ -23,4 +24,9 @@ return [
         'Инструкции по восстановлению пароля были высланы на {email}',
     'Change password' => 'Изменить пароль',
     'New password enter' => 'Ввод нового пароля',
+    'Your have been register'=>'Вы зарегистрированы',
+    'Please check your email and confirm registration'=>'Проверьте свой email и подтвердите регистрацию',
+
+    'Your email was successful confirmed'=>'Ваш email успешно подтвержден',
+    'Your email not confirmed'=>'Ваш email не подтвержден',
 ];

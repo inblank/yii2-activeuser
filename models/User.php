@@ -133,7 +133,7 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
             return false;
         }
         $this->updateAttributes([
-            'token' => '',
+            'token' => null,
             'token_created_at' => 0,
             'status' => self::STATUS_ACTIVE,
         ]);
@@ -556,7 +556,7 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
         }
         $this->updateAttributes([
             'pass_hash' => Yii::$app->getSecurity()->generatePasswordHash($this->password),
-            'token' => '',
+            'token' => null,
             'token_created_at' => 0,
             'status' => $this->status,
         ]);

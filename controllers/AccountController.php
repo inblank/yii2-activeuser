@@ -24,14 +24,22 @@ class AccountController extends Controller
         if (!$this->module->isRegistrationEnabled()) {
             return $this->render('registerDisable');
         }
+        $flashMessageId = 'activeuser_register';
+
+        $email = Yii::$app->session->getFlash($flashMessageId);
+        if (!empty($email)) {
+            return $this->render('registerAfter', [
+                'user' => Yii::createObject(User::className())->findOne(['email' => $email]),
+            ]);
+        }
         /** @var RegisterForm $model */
         $model = Yii::createObject(RegisterForm::className());
-        $view = 'register';
         if ($model->load(Yii::$app->getRequest()->post()) && $model->register()) {
             // congratulation and instruction
-            $view = 'registerAfter';
+            Yii::$app->session->setFlash($flashMessageId, $model->email);
+            return $this->redirect(['/activeuser/account/register']);
         }
-        return $this->render($view, [
+        return $this->render('register', [
             'model' => $model,
         ]);
     }
