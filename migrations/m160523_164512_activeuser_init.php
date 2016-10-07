@@ -8,11 +8,9 @@ class m160523_164512_activeuser_init extends Migration
 {
     public function up()
     {
-        $tableUsers = $this->tab('users');
-        $tableProfiles = $this->tab('profiles');
-
-        // Users
-        $this->createTable($tableUsers, [
+        // Accounts
+        $tab = self::tn(self::TAB_USERS);
+        $this->createTable($tab, [
             'id' => Schema::TYPE_PK,
             'status' => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
 
@@ -32,41 +30,36 @@ class m160523_164512_activeuser_init extends Migration
 
             'registered_at' => Schema::TYPE_DATETIME . ' DEFAULT NULL',
         ], $this->tableOptions);
-        $this->createIndex('unique_email', $tableUsers, 'email', true);
-        $this->createIndex('unique_access_token', $tableUsers, 'access_token', true);
-        $this->createIndex('unique_auth_key', $tableUsers, 'auth_key', true);
-        $this->createIndex('unique_token', $tableUsers, 'token', true);
+        $this->createIndex('unique_email', $tab, 'email', true);
+        $this->createIndex('unique_access_token', $tab, 'access_token', true);
+        $this->createIndex('unique_auth_key', $tab, 'auth_key', true);
+        $this->createIndex('unique_token', $tab, 'token', true);
 
-        // Users profiles
-        $this->createTable($tableProfiles, [
+        // Accounts profiles
+        $tab = self::tn(self::TAB_PROFILES);
+        $this->createTable($tab, [
             'user_id' => Schema::TYPE_PK,
             'site' => Schema::TYPE_STRING . "(255) NOT NULL DEFAULT ''",
             'location' => Schema::TYPE_STRING . "(255) NOT NULL DEFAULT ''",
         ], $this->tableOptions);
-        $this->addForeignKey('fk__profiles__users', $tableProfiles, 'user_id', $tableUsers, 'id', 'CASCADE', 'RESTRICT');
-
+        $this->addForeignKey(
+            self::fk(self::TAB_PROFILES, self::TAB_USERS),
+            $tab, 'user_id',
+            self::tn(self::TAB_USERS), 'id',
+            'CASCADE', 'RESTRICT'
+        );
     }
 
     public function down()
     {
         $tables = [
-            'profiles',
-            'users',
+            self::TAB_PROFILES,
+            self::TAB_USERS,
         ];
         foreach ($tables as $table) {
-            $this->dropTable($this->tab($table));
+            $this->dropTable(self::tn($table));
         }
-        return false;
+        return true;
     }
 
-    /*
-    // Use safeUp/safeDown to run migration code within a transaction
-    public function safeUp()
-    {
-    }
-
-    public function safeDown()
-    {
-    }
-    */
 }
