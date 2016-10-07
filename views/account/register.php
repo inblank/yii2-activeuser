@@ -60,8 +60,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= Html::a(Yii::t('activeuser_frontend', 'Already register? Sign in!'), ['/activeuser/account/login'], ['tabindex' => '4']) ?>
             </p>
             <?php if ($model->module->enablePasswordRestore): ?>
-                <p class="activeuser-recovery">
-                    <?= Html::a(Yii::t('activeuser_frontend', 'Forgot password?'), ['/activeuser/account/recovery'], ['tabindex' => '5']) ?>
+                <p class="activeuser-restore">
+                    <?= Html::a(Yii::t('activeuser_frontend', 'Forgot password?'), ['/activeuser/account/restore'], ['tabindex' => '5']) ?>
                 </p>
             <?php endif; ?>
             <?php if ($model->module->enableConfirmation): ?>

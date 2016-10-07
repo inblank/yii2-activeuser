@@ -47,8 +47,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 </p>
             <?php endif ?>
             <?php if ($model->module->enablePasswordRestore): ?>
-                <p class="activeuser-recovery">
-                    <?= Html::a(Yii::t('activeuser_frontend', 'Forgot password?'), ['/activeuser/account/recovery'], ['tabindex' => '5']) ?>
+                <p class="activeuser-restore">
+                    <?= Html::a(Yii::t('activeuser_frontend', 'Forgot password?'), ['/activeuser/account/restore'], ['tabindex' => '5']) ?>
                 </p>
             <?php endif; ?>
         </div>

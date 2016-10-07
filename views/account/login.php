@@ -46,8 +46,8 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="text-center">
             <?php if ($model->module->enablePasswordRestore): ?>
-                <p class="login-recovery">
-                    <?= Html::a(Yii::t('activeuser_frontend', 'Forgot password?'), ['/activeuser/account/recovery'], ['tabindex' => '5']) ?>
+                <p class="login-restore">
+                    <?= Html::a(Yii::t('activeuser_frontend', 'Forgot password?'), ['/activeuser/account/restore'], ['tabindex' => '5']) ?>
                 </p>
             <?php endif; ?>
             <?php if ($model->module->enableRegistration): ?>
