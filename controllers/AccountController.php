@@ -6,7 +6,6 @@ use inblank\activeuser\models\forms\LoginForm;
 use inblank\activeuser\models\forms\RegisterForm;
 use inblank\activeuser\models\forms\ResendForm;
 use inblank\activeuser\models\forms\RestoreForm;
-use inblank\activeuser\models\User;
 use inblank\activeuser\traits\CommonTrait;
 use yii;
 use yii\web\Controller;
@@ -29,7 +28,7 @@ class AccountController extends Controller
         $email = Yii::$app->session->getFlash($flashMessageId);
         if (!empty($email)) {
             return $this->render('registerAfter', [
-                'user' => Yii::createObject(User::className())->findOne(['email' => $email]),
+                'user' => Yii::createObject(self::di('User'))->findOne(['email' => $email]),
             ]);
         }
         /** @var RegisterForm $model */
@@ -123,12 +122,12 @@ class AccountController extends Controller
         if (!empty($email)) {
             // congratulation message
             return $this->render('restoreComplete', [
-                'user' => Yii::createObject(User::className())->findOne(['email' => $email]),
+                'user' => Yii::createObject(self::di('User'))->findOne(['email' => $email]),
             ]);
         }
 
-        /** @var User $user */
-        if (!$this->getModule()->enablePasswordRestore || $token === null || !($user = Yii::createObject(User::className())->findByToken($token))) {
+        /** @var \inblank\activeuser\models\User $user */
+        if (!$this->getModule()->enablePasswordRestore || $token === null || !($user = Yii::createObject(self::di('User'))->findByToken($token))) {
             throw new yii\web\NotFoundHttpException();
         }
 
@@ -196,8 +195,8 @@ class AccountController extends Controller
      */
     public function actionConfirm($token = '')
     {
-        /** @var User $user */
-        $user = Yii::createObject(User::className())->findByToken($token);
+        /** @var \inblank\activeuser\models\User $user */
+        $user = Yii::createObject(self::di('User'))->findByToken($token);
         if ($user !== null && $user->confirm()) {
             return $this->render('confirm', ['user' => $user]);
         }

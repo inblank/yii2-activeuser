@@ -34,7 +34,7 @@ class DefaultController extends ConsoleController
     public function actionCreate($email = null, $name = null, $password = null)
     {
         /** @var \inblank\activeuser\models\User $user */
-        $user = Yii::createObject('inblank\activeuser\models\User');
+        $user = Yii::createObject(self::di('User'));
         $this->getModule()->registrationFields = ['name'];
         $user->setAttributes(compact('email', 'name', 'password'), false);
         if (!$user->validate(['email', 'name'])) {
@@ -165,7 +165,7 @@ class DefaultController extends ConsoleController
      */
     protected function findUser($email)
     {
-        $user = Yii::createObject('inblank\activeuser\models\User')->findOne(['email' => $email]);
+        $user = Yii::createObject(self::di('User'))->findOne(['email' => $email]);
         if ($user !== null) {
             return $user;
         }

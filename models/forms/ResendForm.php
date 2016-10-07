@@ -2,7 +2,6 @@
 
 namespace inblank\activeuser\models\forms;
 
-use inblank\activeuser\models\User;
 use inblank\activeuser\traits\CommonTrait;
 use yii;
 use yii\base\Model;
@@ -45,8 +44,8 @@ class ResendForm extends Model
         if (!$this->validate()) {
             return false;
         }
-        /** @var User $user */
-        $user = Yii::createObject(User::className())->findOne(['email' => $this->email]);
+        /** @var \inblank\activeuser\models\User $user */
+        $user = Yii::createObject(self::di('User'))->findOne(['email' => $this->email]);
         if ($user) {
             $user->resend();
         }

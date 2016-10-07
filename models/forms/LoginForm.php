@@ -2,7 +2,6 @@
 
 namespace inblank\activeuser\models\forms;
 
-use inblank\activeuser\models\User;
 use inblank\activeuser\traits\CommonTrait;
 use yii;
 use yii\base\Model;
@@ -27,7 +26,7 @@ class LoginForm extends Model
 
     /**
      * Founded user
-     * @var User
+     * @var \inblank\activeuser\models\User
      */
     protected $user = false;
 
@@ -48,12 +47,12 @@ class LoginForm extends Model
         return [
             [['email', 'password'], 'required'],
             ['password', function () {
-                if ($this->getUser()===null || !(new Security())->validatePassword($this->password, $this->getUser()->pass_hash)) {
+                if ($this->getUser() === null || !(new Security())->validatePassword($this->password, $this->getUser()->pass_hash)) {
                     $this->addError('password', Yii::t('activeuser_general', 'Invalid email or password'));
                 }
             }],
             ['email', function () {
-                if ($this->getUser()!==null) {
+                if ($this->getUser() !== null) {
                     if (!$this->getUser()->isConfirmed()) {
                         $this->addError('password', Yii::t('activeuser_general', 'You need to confirm your email address'));
                     } elseif ($this->getUser()->isBlocked()) {
@@ -76,9 +75,11 @@ class LoginForm extends Model
         return false;
     }
 
-    protected function getUser(){
-        if($this->user===false){
-            $this->user = empty($this->email) ? null : User::findOne(['email' => $this->email]);
+    protected function getUser()
+    {
+        if ($this->user === false) {
+            $userClass = self::di('User');
+            $this->user = empty($this->email) ? null : $userClass::findOne(['email' => $this->email]);
         }
         return $this->user;
     }

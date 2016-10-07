@@ -2,7 +2,6 @@
 
 namespace inblank\activeuser\models\forms;
 
-use inblank\activeuser\models\User;
 use inblank\activeuser\traits\CommonTrait;
 use yii;
 use yii\base\Model;
@@ -42,7 +41,7 @@ class RegisterForm extends Model
         return [
             ['email', 'required'],
             ['email', 'email'],
-            ['email', 'unique', 'targetClass' => User::className(), 'targetAttribute' => 'email'],
+            ['email', 'unique', 'targetClass' => self::di('User'), 'targetAttribute' => 'email'],
             ['name', 'required', 'when' => function () {
                 return $this->getModule()->isFieldForRegister('name');
             }],
@@ -63,8 +62,8 @@ class RegisterForm extends Model
         if (!$this->validate()) {
             return false;
         }
-        /** @var User $user */
-        $user = Yii::createObject(User::className());
+        /** @var \inblank\activeuser\models\User $user */
+        $user = Yii::createObject(self::di('User'));
         $user->setAttributes($this->getAttributes());
         return $user->register();
     }

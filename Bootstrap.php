@@ -8,6 +8,7 @@
  */
 namespace inblank\activeuser;
 
+use inblank\activeuser\traits\CommonTrait;
 use yii;
 use yii\base\Application;
 use yii\console\Application as ConsoleApplication;
@@ -20,10 +21,10 @@ use yii\web\GroupUrlRule;
  */
 class Bootstrap implements yii\base\BootstrapInterface
 {
+    use CommonTrait;
 
     /** @var array Model's map */
     private $_modelMap = [
-        'User' => 'inblank\activeuser\models\User',
     ];
 
     /**
@@ -50,7 +51,7 @@ class Bootstrap implements yii\base\BootstrapInterface
                 // init user
                 Yii::$container->set('yii\web\User', [
                     'loginUrl' => ['/activeuser/account/login'],
-                    'identityClass' => $module->modelMap['User'],
+                    'identityClass' => self::di('User'),
                 ]);
                 $configUrlRule = [
                     'prefix' => $module->urlPrefix,

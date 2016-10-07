@@ -2,6 +2,7 @@
 
 namespace inblank\activeuser\models;
 
+use inblank\activeuser\traits\CommonTrait;
 use yii;
 use yii\db\ActiveRecord;
 
@@ -13,6 +14,7 @@ use yii\db\ActiveRecord;
  */
 class Profile extends ActiveRecord
 {
+    use CommonTrait;
 
     /**
      * @inheritdoc
@@ -29,7 +31,7 @@ class Profile extends ActiveRecord
     {
         return [
             ['user_id', 'required'],
-            ['user_id', 'exist', 'targetClass' => User::className(), 'targetAttribute' => 'id'],
+            ['user_id', 'exist', 'targetClass' => self::di('User'), 'targetAttribute' => 'id'],
         ];
     }
 
@@ -47,6 +49,6 @@ class Profile extends ActiveRecord
 
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(self::di('User'), ['id' => 'user_id']);
     }
 }

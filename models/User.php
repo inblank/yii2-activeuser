@@ -74,7 +74,8 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
      */
     public static function find()
     {
-        return new UserQuery(get_called_class());
+        $queryClass = self::di('UserQuery');
+        return new $queryClass(get_called_class());
     }
 
     /**
@@ -252,7 +253,7 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
      */
     public function getProfile()
     {
-        return $this->hasOne(Profile::className(), ['user_id' => 'id']);
+        return $this->hasOne(self::di('Profile'), ['user_id' => 'id']);
     }
 
     /**
@@ -277,7 +278,7 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
         if ($insert) {
             // add profile for new user
             Yii::createObject([
-                'class' => Profile::className(),
+                'class' => self::di('Profile'),
                 'user_id' => $this->id,
             ])->save();
         }
