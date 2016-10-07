@@ -34,4 +34,27 @@ trait CommonTrait{
         return $this->_module;
     }
 
+    /**
+     * Models dependency injection resolver
+     * @param string $name class name for resolve
+     * @return mixed
+     * @throws InvalidConfigException
+     */
+    public static function di($name)
+    {
+        $class = 'inblank\activeuser\models\\' . $name;
+        return empty(self::getModule()->modelMap[$name]) ? $class : self::getModule()->modelMap[$name];
+    }
+
+    /**
+     * Models table name with dependency injection resolver
+     * @param string $name class name for get table name
+     * @return string
+     * @throws InvalidConfigException
+     */
+    public static function tn($name)
+    {
+        $name = self::di($name);
+        return $name::tableName();
+    }
 }
