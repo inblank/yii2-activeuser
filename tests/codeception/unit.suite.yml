@@ -5,6 +5,8 @@
 class_name: UnitTester
 modules:
     enabled:
-        - Db
-        - Asserts
+        - Yii2
         - \Helper\Unit
+    config:
+        Yii2:
+            configFile: 'codeception/config/unit.php'

@@ -9,7 +9,6 @@ modules:
     enabled:
         - Yii2
         - \Helper\Functional
-        - tests\codeception\_support\Helper\Fixture
     config:
         Yii2:
             configFile: 'codeception/config/functional.php'

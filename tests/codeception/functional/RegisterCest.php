@@ -1,19 +1,40 @@
 <?php
 
 
-use app\components\MailMock;
+use inblank\activeuser\models\forms\RegisterForm;
 use inblank\activeuser\models\User;
-use tests\codeception\_pages\ConfirmPage;
-use tests\codeception\_pages\RegisterPage;
+use tests\codeception\_fixtures\ProfileFixture;
+use tests\codeception\_fixtures\UserFixture;
 
 class RegisterCest
 {
+    public $formName;
+    public $nameField;
+    public $emailField;
+    public $passwordField;
+    public $route = '/activeuser/account/register';
+
     public function _before(FunctionalTester $I)
     {
+        $this->formName = Yii::createObject(RegisterForm::className())->formName();
+        $this->nameField = "{$this->formName}[name]";
+        $this->emailField = "{$this->formName}[email]";
+        $this->passwordField = "{$this->formName}[password]";
     }
 
     public function _after(FunctionalTester $I)
     {
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function _fixtures()
+    {
+        return [
+            'users' => UserFixture::className(),
+            'profiles' => ProfileFixture::className(),
+        ];
     }
 
     /**
@@ -31,11 +52,14 @@ class RegisterCest
 
         // turn off registration
         $I->amGoingTo('register page if registration disabled');
-        /** @var RegisterPage $page */
-        $page = RegisterPage::openBy($I);
+
+        $I->amOnRoute($this->route);
+
         $I->expectTo('see message about disabled registration');
-        $I->see('disabled');
-        $I->dontSeeElement($page->fullFieldId('email'));
+        $I->see('Registration is disabled');
+
+        $I->dontSeeElement("[name='{$this->emailField}']");
+        $I->dontSeeElement("[name='{$this->passwordField}']");
     }
 
     /**
@@ -48,61 +72,73 @@ class RegisterCest
             'enableRegistration' => true,
             'registrationFields' => [],
         ]);
-
         $registerEmail = 'onlyemail@example.com';
 
         $I->amGoingTo('register page with email field');
         /** @var \inblank\activeuser\Module $module */
-        /** @var RegisterPage $page */
-        $page = RegisterPage::openBy($I);
+
+        $I->amOnRoute($this->route);
+
         $I->expectTo('see at email fields');
-        $I->seeElement($page->fullFieldId('email'));
-        $I->dontSeeElement($page->fullFieldId('name'));
-        $I->dontSeeElement($page->fullFieldId('password'));
+        $I->seeElement("[name='{$this->emailField}']");
+        $I->dontSeeElement("[name='{$this->nameField}']");
+        $I->dontSeeElement("[name='{$this->passwordField}']");
 
         $I->amGoingTo('try to register with empty email');
-        $page->register();
+        $I->submitForm('form', [
+            $this->emailField => '',
+        ]);
         $I->expectTo('see validations errors');
         $I->see('Email cannot be blank');
 
         $I->amGoingTo('try to register wrong email');
-        $page->register(['email' => 'qwerty']);
+        $I->submitForm('form', [
+            $this->emailField => 'qwerty',
+        ]);
         $I->expectTo('see validations errors');
         $I->see('Email is not a valid email address');
 
         $I->amGoingTo('try to register with not unique email');
-        $page->register(['email' => 'active@example.com']);
+        $I->submitForm('form', [
+            $this->emailField => 'active@example.com',
+        ]);
         $I->expectTo('see validations errors');
         $I->see('Email "active@example.com" has already been taken');
 
-        MailMock::$mails = [];
         $I->amGoingTo('try to register with new correct email');
-        $page->register(['email' => $registerEmail]);
+        $I->submitForm('form', [
+            $this->emailField => $registerEmail,
+        ]);
         $I->expectTo('see instruction page');
         $I->see('Check your email');
-        $I->seeRecord(User::className(), ['email'=>$registerEmail]);
+        $I->seeRecord(User::className(), ['email' => $registerEmail]);
+        $I->seeEmailIsSent();
 
         $I->amGoingTo('try to confirmation page with token from email');
-        $url = $page->getUrlFromEmail('confirm', \app\components\MailMock::$mails[0]['body']);
+        /** @var \yii\swiftmailer\Message $message */
+        $message = $I->grabLastSentEmail();
+        $url = $this->getUrlFromEmail('confirm', $message->toString());
+
         expect("in email must be confirm url", $url)->notEmpty();
-        unset($url['r']);
-        MailMock::$mails = [];
-        ConfirmPage::openBy($I, $url);
+        $I->amOnPage($url);
         $I->expectTo('see confirmation page');
-        $I->see('Email was confirmed successful');
-        expect("we can fetch thank email", strtolower(MailMock::$mails[0]['subject']))->contains('thank you');
+        $I->see('Your email was successful confirmed');
+        $I->seeEmailIsSent();
+        $message = $I->grabLastSentEmail();
+        expect("we can fetch thank email", strtolower($message->getSubject()))->contains('thank you');
+
         $user = User::findOne(['email' => $registerEmail]);
         expect("user must be active", !empty($user) && $user->isActive())->true();
 
         $I->amGoingTo('try to confirmation page with wrong token');
-        ConfirmPage::openBy($I, ['token' => '123']);
+        $I->amOnPage(['/activeuser/account/confirm', 'token' => '123']);
         $I->expectTo('see wrong confirmation page');
-        $I->see('Confirm not successful');
+        $I->see('Your email not confirmed');
 
         $I->amGoingTo('try to confirmation page with empty token');
-        ConfirmPage::openBy($I);
+        $I->amOnPage(['/activeuser/account/confirm']);
         $I->expectTo('see wrong confirmation page');
-        $I->see('Confirm not successful');
+        $I->see('Your email not confirmed');
     }
 
     /**
@@ -118,42 +154,43 @@ class RegisterCest
         $registerEmail = 'emailpassword@example.com';
 
         $I->amGoingTo('register page with email and password fields');
-        /** @var RegisterPage $page */
-        $page = RegisterPage::openBy($I);
+        $I->amOnRoute($this->route);
         $I->expectTo('see at email fields');
-        $I->seeElement($page->fullFieldId('email'));
-        $I->seeElement($page->fullFieldId('password'));
-        $I->dontSeeElement($page->fullFieldId('name'));
+        $I->seeElement("[name='{$this->emailField}']");
+        $I->seeElement("[name='{$this->passwordField}']");
+        $I->dontSeeElement("[name='{$this->nameField}']");
 
         $I->amGoingTo('try to register empty password');
-        $page->register(['email' => $registerEmail]);
+        $I->submitForm('form', [
+            $this->emailField => $registerEmail,
+        ]);
         $I->expectTo('see validations errors');
         $I->see('Password cannot be blank');
 
         $I->amGoingTo('try to register with too short password');
-        $page->register([
-            'email' => $registerEmail,
-            'password' => 'qwe',
+        $I->submitForm('form', [
+            $this->emailField => $registerEmail,
+            $this->passwordField => 'qwe'
         ]);
         $I->expectTo('see validations errors');
         $I->see('Password should contain at least 6 characters');
 
         $I->amGoingTo('try to register with too long password');
-        $page->register([
-            'email' => $registerEmail,
-            'password' => str_pad('', 50, 'q'),
+        $I->submitForm('form', [
+            $this->emailField => $registerEmail,
+            $this->passwordField => str_pad('', 50, 'q')
         ]);
         $I->expectTo('see validations errors');
         $I->see('Password should contain at most 20 characters');
 
-        MailMock::$mails = [];
         $I->amGoingTo('try to register with correct data');
-        $page->register([
-            'email' => $registerEmail,
-            'password' => 'qwer12345',
+        $I->submitForm('form', [
+            $this->emailField => $registerEmail,
+            $this->passwordField => 'qwer12345'
         ]);
         $I->expectTo('see instruction page');
         $I->see('Check your email');
+        $I->seeEmailIsSent();
     }
 
     public function testRegisterWithEmailAndName(FunctionalTester $I)
@@ -166,26 +203,27 @@ class RegisterCest
         $registerEmail = 'emailname@example.com';
 
         $I->amGoingTo('register page with email and name fields');
-        /** @var RegisterPage $page */
-        $page = RegisterPage::openBy($I);
+        $I->amOnRoute($this->route);
         $I->expectTo('see at email and name fields');
-        $I->seeElement($page->fullFieldId('email'));
-        $I->seeElement($page->fullFieldId('name'));
-        $I->dontSeeElement($page->fullFieldId('password'));
+        $I->seeElement("[name='{$this->emailField}']");
+        $I->seeElement("[name='{$this->nameField}']");
+        $I->dontSeeElement("[name='{$this->passwordField}']");
 
         $I->amGoingTo('try to register empty name');
-        $page->register(['email' => $registerEmail]);
+        $I->submitForm('form', [
+            $this->emailField => $registerEmail,
+        ]);
         $I->expectTo('see validations errors');
         $I->see('Name cannot be blank');
 
-        MailMock::$mails = [];
         $I->amGoingTo('try to register with correct data');
-        $page->register([
-            'email' => $registerEmail,
-            'name' => 'Pavel',
+        $I->submitForm('form', [
+            $this->emailField => $registerEmail,
+            $this->nameField => 'Pavel'
         ]);
         $I->expectTo('see instruction page');
         $I->see('Check your email');
+        $I->seeEmailIsSent();
     }
 
     public function testRegisterWithEmailNameAndPassword(FunctionalTester $I)
@@ -198,40 +236,63 @@ class RegisterCest
         $registerEmail = 'emailnamepassword@example.com';
 
         $I->amGoingTo('register page with email, name and password fields');
-        /** @var RegisterPage $page */
-        $page = RegisterPage::openBy($I);
+        $I->amOnRoute($this->route);
         $I->expectTo('see at email, name and password fields');
-        $I->seeElement($page->fullFieldId('email'));
-        $I->seeElement($page->fullFieldId('name'));
-        $I->seeElement($page->fullFieldId('password'));
+        $I->seeElement("[name='{$this->emailField}']");
+        $I->seeElement("[name='{$this->nameField}']");
+        $I->seeElement("[name='{$this->passwordField}']");
 
         $I->amGoingTo('try to register empty name and password');
-        $page->register(['email' => $registerEmail]);
+        $I->submitForm('form', [
+            $this->emailField => $registerEmail,
+        ]);
         $I->expectTo('see validations errors');
         $I->see('Password cannot be blank');
         $I->see('Name cannot be blank');
 
         $I->amGoingTo('try to register empty name');
-        $page->register(['email' => $registerEmail, 'name'=>'', 'password'=>'testing']);
+        $I->submitForm('form', [
+            $this->emailField => $registerEmail,
+            $this->passwordField => 'testing',
+            $this->nameField => '',
+        ]);
         $I->expectTo('see validations errors');
         $I->see('Name cannot be blank');
         $I->dontSee('Password cannot be blank');
 
         $I->amGoingTo('try to register empty password');
-        $page->register(['email' => $registerEmail, 'name'=>'Pavel', 'password'=>'']);
+        $I->submitForm('form', [
+            $this->emailField => $registerEmail,
+            $this->nameField => 'Pavel',
+            $this->passwordField => ''
+        ]);
         $I->expectTo('see validations errors');
         $I->see('Password cannot be blank');
         $I->dontSee('Name cannot be blank');
 
-        MailMock::$mails = [];
         $I->amGoingTo('try to register with correct data');
-        $page->register([
-            'email' => $registerEmail,
-            'name' => 'Pavel',
-            'password' => 'testing',
+        $I->submitForm('form', [
+            $this->emailField => $registerEmail,
+            $this->nameField => 'Pavel',
+            $this->passwordField => 'testing',
         ]);
         $I->expectTo('see instruction page');
         $I->see('Check your email');
+        $I->seeEmailIsSent();
     }
 
+    protected function getUrlFromEmail($linkType, $messageText)
+    {
+        preg_match_all("/href.+\"(.*)\">/imsU", $messageText, $m);
+        foreach ($m[1] as $url) {
+            $url = htmlspecialchars_decode(rawurldecode(quoted_printable_decode($url)));
+            parse_str(parse_url($url, PHP_URL_QUERY), $url);
+            if (!empty($url['r']) && strpos($url['r'], $linkType) !== false) {
+                $url[0] = '/' . $url['r'];
+                unset($url['r']);
+                return $url;
+            }
+        }
+        return false;
+    }
 }

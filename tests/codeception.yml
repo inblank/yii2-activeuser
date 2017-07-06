@@ -19,7 +19,9 @@ coverage:
 modules:
     config:
         Db:
-            dsn: 'mysql:host=localhost;dbname=testdb'
+            dsn: 'mysql:host=127.0.0.1;dbname=testdb'
             user: 'travis'
             password: ''
-            dump: codeception/_data/structure.sql
+            dump: 'codeception/_data/structure.sql'
+            populate: true
+

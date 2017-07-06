@@ -8,7 +8,6 @@ use inblank\activeuser\Module;
 use tests\codeception\_fixtures\ProfileFixture;
 use tests\codeception\_fixtures\UserFixture;
 use yii;
-use yii\codeception\TestCase;
 use yii\db\Query;
 
 /**
@@ -16,7 +15,7 @@ use yii\db\Query;
  *
  * @package tests\codeception
  */
-class UserQueryTest extends TestCase
+class UserQueryTest extends \Codeception\Test\Unit
 {
     use Specify;
 
@@ -26,7 +25,7 @@ class UserQueryTest extends TestCase
     /**
      * @inheritdoc
      */
-    public function fixtures()
+    public function _fixtures()
     {
         return [
             'user' => UserFixture::className(),
@@ -75,7 +74,7 @@ class UserQueryTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->module = Yii::$app->modules['activeuser'];
+        $this->module = Yii::$app->getModule('activeuser');
     }
 
 }

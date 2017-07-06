@@ -18,6 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php $form = ActiveForm::begin([
                     'enableAjaxValidation' => false,
                     'enableClientValidation' => false,
+                    'enableClientScript' => false,
                     'validateOnBlur' => false,
                     'validateOnType' => false,
                     'validateOnChange' => false,

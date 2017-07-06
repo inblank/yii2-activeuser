@@ -14,21 +14,18 @@ return [
     'components' => [
         'db' => [
             'class' => 'yii\db\Connection',
-            'dsn' => 'mysql:host=localhost;dbname=testdb',
+            'dsn' => 'mysql:host=127.0.0.1;dbname=testdb',
             'username' => 'travis',
             'password' => '',
             'charset' => 'utf8',
+        ],
+        'security' => [
+            'passwordHashCost' => 4,
         ],
         'request' => [
             'enableCsrfValidation' => false,
             'enableCookieValidation' => false,
         ],
-        'mailer' => [
-            'class' => 'app\components\MailMock',
-        ],
-        'assetManager' => [
-            'bundles' => null,
-        ]
     ],
     'bootstrap' => [
         [

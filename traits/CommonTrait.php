@@ -15,25 +15,17 @@ use yii\base\InvalidConfigException;
 trait CommonTrait
 {
     /**
-     * Module instance
-     * @var \inblank\activeuser\Module
-     */
-    static protected $_module;
-
-    /**
      * Get module
      * @return \inblank\activeuser\Module
      * @throws InvalidConfigException
      */
     static function getModule()
     {
-        if (self::$_module === null) {
-            if (empty(Yii::$app->modules['activeuser'])) {
-                throw new InvalidConfigException('You must configure module as `activeuser`');
-            }
-            self::$_module = Yii::$app->getModule('activeuser');
+        /** @var \inblank\activeuser\Module $module */
+        if ($module = Yii::$app->getModule('activeuser')) {
+            return $module;
         }
-        return self::$_module;
+        throw new InvalidConfigException('You must configure module as `activeuser`');
     }
 
     /**
