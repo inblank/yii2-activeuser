@@ -11,9 +11,7 @@ use yii;
 use yii\db\Query;
 
 /**
- * Class UserQueryTest
- *
- * @package tests\codeception
+ * @property \UnitTester $tester
  */
 class UserQueryTest extends \Codeception\Test\Unit
 {
@@ -21,17 +19,6 @@ class UserQueryTest extends \Codeception\Test\Unit
 
     /** @var  Module */
     protected $module;
-
-    /**
-     * @inheritdoc
-     */
-    public function _fixtures()
-    {
-        return [
-            'user' => UserFixture::className(),
-            'profile' => ProfileFixture::className(),
-        ];
-    }
 
     public function testFind()
     {
@@ -77,4 +64,12 @@ class UserQueryTest extends \Codeception\Test\Unit
         $this->module = Yii::$app->getModule('activeuser');
     }
 
+    protected function _before()
+    {
+        parent::_before();
+        $this->tester->haveFixtures([
+            'users' => UserFixture::className(),
+            'profiles' => ProfileFixture::className(),
+        ]);
+    }
 }

@@ -16,6 +16,11 @@ class RegisterCest
 
     public function _before(FunctionalTester $I)
     {
+        $I->haveFixtures([
+            'users' => UserFixture::className(),
+            'profiles' => ProfileFixture::className(),
+        ]);
+
         $this->formName = Yii::createObject(RegisterForm::className())->formName();
         $this->nameField = "{$this->formName}[name]";
         $this->emailField = "{$this->formName}[email]";

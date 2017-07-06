@@ -17,11 +17,11 @@ coverage:
     include:
         - ../models/*
 modules:
-    config:
-        Db:
-            dsn: 'mysql:host=127.0.0.1;dbname=testdb'
-            user: 'travis'
-            password: ''
-            dump: 'codeception/_data/structure.sql'
-            populate: true
-
+    enabled:
+      - Db:
+          dsn: 'mysql:host=127.0.0.1;dbname=testdb'
+          user: 'travis'
+          password: ''
+          dump: 'codeception/_data/structure.sql'
+          populate: true
+          cleanup: true

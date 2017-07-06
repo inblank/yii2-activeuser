@@ -12,3 +12,4 @@ modules:
     config:
         Yii2:
             configFile: 'codeception/config/functional.php'
+            cleanup: false

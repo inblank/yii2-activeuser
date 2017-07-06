@@ -24,17 +24,6 @@ class UserTest extends \Codeception\Test\Unit
     public $module;
 
     /**
-     * @inheritdoc
-     */
-    public function _fixtures()
-    {
-        return [
-            'users' => UserFixture::className(),
-            'profiles' => ProfileFixture::className(),
-        ];
-    }
-
-    /**
      * Registration test with `null` data for User model
      */
     public function testRegistrationNull()
@@ -68,6 +57,7 @@ class UserTest extends \Codeception\Test\Unit
     public function testCreation()
     {
         $this->module->enableRegistration = false;
+
         $this->specify("we have create user if registration disabled", function () {
             $user = new User([
                 'email' => 'user@example.com',
@@ -121,6 +111,7 @@ class UserTest extends \Codeception\Test\Unit
     public function testBlocking()
     {
         $this->module->enableBlockingEmail = true;
+
         $this->specify("we have block user", function () {
             /** @var User $user */
             //$user = $this->getFixture('user')->getModel('active');
@@ -177,6 +168,7 @@ class UserTest extends \Codeception\Test\Unit
     public function testRegistration()
     {
         $this->module->enableRegistration = false;
+
         $this->specify("we have register if registration disabled", function () {
             $user = new User([
                 'email' => 'user@example.com',
@@ -505,6 +497,15 @@ class UserTest extends \Codeception\Test\Unit
         expect("user cannot be saved", $user->save())->false();
         expect("we can see error", $user->getErrors())->hasKey('event');
         expect("password hash must be empty", $user->pass_hash)->isEmpty();
+    }
+
+    protected function _before()
+    {
+        parent::_before();
+        $this->tester->haveFixtures([
+            'users' => UserFixture::className(),
+            'profiles' => ProfileFixture::className(),
+        ]);
     }
 
     protected function tearDown()

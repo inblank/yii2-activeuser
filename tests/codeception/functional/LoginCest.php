@@ -8,22 +8,26 @@ class LoginCest
 {
     public function _before(FunctionalTester $I)
     {
+        $I->haveFixtures([
+            'users' => UserFixture::className(),
+            'profiles' => ProfileFixture::className(),
+        ]);
     }
 
     public function _after(FunctionalTester $I)
     {
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function _fixtures()
-    {
-        return [
-            'users' => UserFixture::className(),
-            'profiles' => ProfileFixture::className(),
-        ];
-    }
+//    /**
+//     * @inheritdoc
+//     */
+//    public function _fixtures()
+//    {
+//        return [
+//            'users' => UserFixture::className(),
+//            'profiles' => ProfileFixture::className(),
+//        ];
+//    }
 
     // tests
     public function testFullLogin(FunctionalTester $I)

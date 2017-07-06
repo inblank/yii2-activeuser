@@ -10,3 +10,4 @@ modules:
     config:
         Yii2:
             configFile: 'codeception/config/unit.php'
+            cleanup: false
