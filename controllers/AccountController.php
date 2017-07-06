@@ -16,6 +16,23 @@ class AccountController extends Controller
     use CommonTrait;
 
     /**
+     * @inheritdoc
+     */
+    public function beforeAction($action)
+    {
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+        if (!Yii::$app->user->isGuest
+            && in_array($action->id, ['register', 'login', 'resend', 'restore', 'confirm'])
+        ) {
+            // unavailable action for authorized user
+            return $this->redirect('/');
+        }
+        return true;
+    }
+
+    /**
      * User registering action
      */
     public function actionRegister()
@@ -64,7 +81,8 @@ class AccountController extends Controller
      */
     public function actionLogout()
     {
-
+        Yii::$app->user->logout();
+        return $this->redirect('/');
     }
 
     /**
@@ -162,12 +180,12 @@ class AccountController extends Controller
     public function actionResend()
     {
         // TODO filter too many resend request and set in Module period for resend
-        if(!$this->getModule()->enableConfirmation){
+        if (!$this->getModule()->enableConfirmation) {
             throw new yii\web\NotFoundHttpException();
         }
 
         $email = Yii::$app->session->getFlash('resend');
-        if($email!==null){
+        if ($email !== null) {
             // already sent
             return $this->render('resendComplete', [
                 'email' => $email,
