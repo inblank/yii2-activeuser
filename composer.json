@@ -20,7 +20,8 @@
     "php": ">=7.0",
     "yiisoft/yii2": "2.0.*",
     "yiisoft/yii2-swiftmailer": "~2.0",
-    "roderik/pwgen-php": "0.1.5"
+    "roderik/pwgen-php": "0.1.5",
+    "inblank/yii2-image": "~0.1"
   },
   "require-dev": {
     "codeception/codeception": "^2.1",

@@ -6,9 +6,11 @@
  * @copyright Copyright (c) 2016 Pavel Aleksandrov <inblank@yandex.ru>
  * @license http://opensource.org/licenses/MIT
  */
+
 namespace inblank\activeuser\models;
 
 use inblank\activeuser\traits\CommonTrait;
+use inblank\image\ImageBehavior;
 use yii;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
@@ -37,6 +39,8 @@ use yii\web\IdentityInterface;
  *
  * Relations:
  * @property Profile $profile user profile data
+ *
+ * @mixin ImageBehavior
  */
 class User extends ActiveRecord implements yii\web\IdentityInterface
 {
@@ -669,5 +673,20 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
                 'user' => $this,
             ]);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => ImageBehavior::className(),
+                'imageAttribute' => 'avatar',
+                'imageSize' => 150,
+                'imageResizeStrategy' => ImageBehavior::CROP,
+            ]
+        ];
     }
 }
