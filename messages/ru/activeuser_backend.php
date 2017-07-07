@@ -1,5 +1,14 @@
 <?php
 return [
+    'Create User' => 'Создать пользователя',
+    'Update User' => 'Изменить пользователя',
+    'Create' => 'Создать',
+    'Update' => 'Изменить',
+    'Delete' => 'Удалить',
+    'Block' => 'Блокировать',
+    'Unblock' => 'Разблокировать',
+    'YYYY-MM-DD' => 'ГГГГ-ММ-ДД',
+
     'Usage' => 'Использование',
     'Action canceled' => 'Действие отменено',
     'Error' => 'Ошибка',
@@ -22,4 +31,8 @@ return [
     'Change user password' => 'Изменение пароля пользователя',
     'Change password user {name} with email {email}?' => 'Изменить пароль пользователя {name} с email {email}?',
     'New user data' => 'Новые данные пользователя',
+
+    'Are you sure you want to delete user?' => 'Вы действительно хотите удалить пользователя?',
+    'Are you sure you want to block user?' => 'Вы действительно хотите блокировать пользователя?',
+    'Are you sure you want to unblock user?' => 'Вы действительно хотите разблокировать пользователя?',
 ];

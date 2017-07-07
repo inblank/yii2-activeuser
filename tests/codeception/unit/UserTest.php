@@ -105,6 +105,16 @@ class UserTest extends \Codeception\Test\Unit
         });
     }
 
+    public function testUpdate()
+    {
+        /** @var User $user */
+        $this->specify("we have update user name", function () {
+            $user = $this->tester->grabFixture('users', 'active');
+            $user->name = 'Updated User Name';
+            expect('user update', $user->save())->true();
+        });
+    }
+
     /**
      * Blocking test for User model
      */

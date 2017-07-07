@@ -192,7 +192,10 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
     {
         // todo check password length
         return [
-            [['email', 'password'], 'required'],
+            [['email'], 'required'],
+            ['password', 'required', 'when' => function ($model) {
+                return $model->isNewRecord;
+            }],
             ['email', 'unique'],
             ['email', 'string', 'max' => 200],
             ['email', 'email'],
@@ -248,6 +251,10 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
             'token' => Yii::t('activeuser_general', 'Token'),
             'token_created_at' => Yii::t('activeuser_general', 'Token created'),
             'registered_at' => Yii::t('activeuser_general', 'Registered'),
+
+            'statusText' => Yii::t('activeuser_general', 'Status'),
+            'genderText' => Yii::t('activeuser_general', 'Gender'),
+            'imageUrl' => Yii::t('activeuser_general', 'Avatar'),
         ];
     }
 
@@ -594,36 +601,21 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
         if ($status === null) {
             $status = $this->status;
         }
-        switch ($status) {
-            case self::STATUS_ACTIVE:
-                $statusText = 'Active';
-                break;
-            case self::STATUS_BLOCKED:
-                $statusText = 'Blocked';
-                break;
-            case self::STATUS_CONFIRM:
-                $statusText = 'Confirm';
-                break;
-            case self::STATUS_RESTORE:
-                $statusText = 'Restore';
-                break;
-            default:
-                return null;
-        }
-        return Yii::t('activeuser_general', $statusText);
+        $statuses = self::statusesList();
+        return empty($statuses[$status]) ? '' : $statuses[$status];
     }
 
     /**
      * Get status list as array
      * @return array
      */
-    public function statusesList()
+    static public function statusesList()
     {
         return [
-            self::STATUS_ACTIVE => $this->getStatusText(self::STATUS_ACTIVE),
-            self::STATUS_BLOCKED => $this->getStatusText(self::STATUS_BLOCKED),
-            self::STATUS_CONFIRM => $this->getStatusText(self::STATUS_CONFIRM),
-            self::STATUS_RESTORE => $this->getStatusText(self::STATUS_RESTORE),
+            self::STATUS_ACTIVE => Yii::t('activeuser_general', 'Active'),
+            self::STATUS_BLOCKED => Yii::t('activeuser_general', 'Blocked'),
+            self::STATUS_CONFIRM => Yii::t('activeuser_general', 'Confirm'),
+            self::STATUS_RESTORE => Yii::t('activeuser_general', 'Restore'),
         ];
     }
 
@@ -637,28 +629,20 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
         if ($gender === null) {
             $gender = $this->gender;
         }
-        switch ($gender) {
-            case self::MALE:
-                $genderText = 'Men';
-                break;
-            case self::FEMALE:
-                $genderText = 'Women';
-                break;
-            default:
-                return null;
-        }
-        return Yii::t('activeuser_general', $genderText);
+        $genders = self::gendersList();
+        return empty($genders[$gender]) ? $genders[0] : $genders[$gender];
     }
 
     /**
      * Get gender list as array
      * @return array
      */
-    public function gendersList()
+    static public function gendersList()
     {
         return [
-            self::MALE => $this->getGenderText(self::MALE),
-            self::FEMALE => $this->getGenderText(self::FEMALE),
+            0 => Yii::t('activeuser_general', 'None'),
+            self::MALE => Yii::t('activeuser_general', 'Male'),
+            self::FEMALE => Yii::t('activeuser_general', 'Female'),
         ];
     }
 

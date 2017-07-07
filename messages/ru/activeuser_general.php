@@ -1,5 +1,8 @@
 <?php
 return [
+    'User' => 'Пользователь',
+    'Users' => 'Пользователи',
+
     'Status' => 'Статус',
     'Email' => 'Email',
     'Password' => 'Пароль',
@@ -37,9 +40,19 @@ return [
     'User not request restore procedure' => 'Пользователь не запрашивал процедуру восстановления',
     'You cannot start restore procedure' => 'Вы не можете начать процедуру восстановления',
 
-    'Password restore by email is disabled'=>'Восстановление пароля по email отключено',
+    'Password restore by email is disabled' => 'Восстановление пароля по email отключено',
 
     'You are blocked' => 'Вы заблокированы',
     'You are unblocked' => 'Вы разблокированы',
-    'Password was changed'=>'Пароль изменен',
+    'Password was changed' => 'Пароль изменен',
+
+    'None' => 'Не указан',
+
+    'Active' => 'Активный',
+    'Blocked' => 'Блокирован',
+    'Confirm' => 'Подтверждение',
+    'Restore' => 'Восстановление',
+
+    'Male' => 'Мужчина',
+    'Female' => 'Женщина',
 ];
