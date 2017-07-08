@@ -3,6 +3,17 @@ return [
     'Sign in' => 'Авторизация',
     'Register' => 'Регистрация',
     'Confirm'=>'Подтверждение',
+    'Update' => 'Изменить',
+    'Sign out' => 'Выйти',
+
+    'Change Password' => 'Сменить пароль',
+    'Change' => 'Сменить',
+    'Cancel' => 'Отмена',
+    'Old Password' => 'Старый пароль',
+    'New Password' => 'Новый пароль',
+    'Invalid old password' => 'Неверный старый пароль',
+
+    'YYYY-MM-DD' => 'ГГГГ-МММ-ДД',
 
     'Forgot password?' => 'Забыли пароль?',
     "Didn't receive confirmation message?" => "Не получили письмо-подтверждение?",
@@ -29,4 +40,6 @@ return [
 
     'Your email was successful confirmed'=>'Ваш email успешно подтвержден',
     'Your email not confirmed'=>'Ваш email не подтвержден',
+
+    'User not found' => 'Пользователь не найден',
 ];

@@ -2,12 +2,14 @@
 
 namespace inblank\activeuser\controllers;
 
+use inblank\activeuser\models\forms\ChangePasswordForm;
 use inblank\activeuser\models\forms\LoginForm;
 use inblank\activeuser\models\forms\RegisterForm;
 use inblank\activeuser\models\forms\ResendForm;
 use inblank\activeuser\models\forms\RestoreForm;
 use inblank\activeuser\traits\CommonTrait;
 use yii;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 
 class AccountController extends Controller
@@ -18,18 +20,43 @@ class AccountController extends Controller
     /**
      * @inheritdoc
      */
-    public function beforeAction($action)
+    public function behaviors()
     {
-        if (!parent::beforeAction($action)) {
-            return false;
-        }
-        if (!Yii::$app->user->isGuest
-            && in_array($action->id, ['register', 'login', 'resend', 'restore', 'confirm'])
-        ) {
-            // unavailable action for authorized user
-            return $this->redirect('/');
-        }
-        return true;
+        $authorizedUserAction = ['index', 'update', 'change-password', 'logout'];
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'except' => ['confirm', 'view'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['register', 'login', 'resend', 'restore'],
+                        'roles' => ['?'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => $authorizedUserAction,
+                        'roles' => ['@'],
+                    ],
+                ],
+                'denyCallback' => function ($rule, $action) use ($authorizedUserAction) {
+                    return in_array($action->id, $authorizedUserAction) ?
+                        $action->controller->redirect(['login']) :
+                        $action->controller->redirect(['index']);
+                },
+            ],
+        ];
+    }
+
+    /**
+     * General user cabinet page
+     */
+    public function actionIndex()
+    {
+        $user = $this->findModel(Yii::$app->user->id);
+        return $this->render('index', [
+            'user' => $user
+        ]);
     }
 
     /**
@@ -221,4 +248,67 @@ class AccountController extends Controller
         return $this->render('confirmWrong');
     }
 
+    /**
+     * View user data
+     * @param int $id user identifier. If null, viewing data of the current logged user
+     * If null and user is guest will trow yii\web\HttpException exception with 404 status code
+     * @return string
+     * @throws yii\web\HttpException
+     */
+    public function actionView($id = null)
+    {
+        $id || $id = Yii::$app->user->id;
+        $user = $this->findModel($id);
+        return $this->render('view', [
+            'user' => $user
+        ]);
+    }
+
+    /**
+     * Update data of the current logged user
+     */
+    public function actionUpdate()
+    {
+        $user = $this->findModel(Yii::$app->user->id);
+        if ($user->load(Yii::$app->request->post()) && $user->save()) {
+            return $this->redirect(['index']);
+        }
+        return $this->render('update', [
+            'user' => $user
+        ]);
+    }
+
+    /**
+     * Update password of the current logged user
+     */
+    public function actionChangePassword()
+    {
+        $user = $this->findModel(Yii::$app->user->id);
+        /** @var ChangePasswordForm $form */
+        $form = Yii::createObject(ChangePasswordForm::className());
+        if ($form->load(Yii::$app->request->post()) && $form->changePassword()) {
+            return $this->redirect(['index']);
+        }
+        $form->reset();
+        return $this->render('changePassword', [
+            'user' => $user,
+            'model' => $form,
+        ]);
+    }
+
+    /**
+     * Find user model
+     * @param mixed $value value for search
+     * @param string $field field where search. Default `id`
+     * @return mixed
+     * @throws yii\web\HttpException
+     */
+    public function findModel($value, $field = 'id')
+    {
+        $user = Yii::createObject(self::di('User'))->findOne([$field => $value]);
+        if (!$user) {
+            throw new yii\web\HttpException(404, Yii::t('activeuser_frontend', 'User not found'));
+        }
+        return $user;
+    }
 }
