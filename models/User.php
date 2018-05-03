@@ -433,7 +433,7 @@ class User extends ActiveRecord implements yii\web\IdentityInterface
      */
     public function generatePassword()
     {
-        return (new \PWGen())->generate();
+        return (new \PWGen\PWGen())->generate();
     }
 
     /**
