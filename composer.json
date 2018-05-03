@@ -20,7 +20,7 @@
     "php": ">=7.0",
     "yiisoft/yii2": "2.0.*",
     "yiisoft/yii2-swiftmailer": "~2.0",
-    "roderik/pwgen-php": "0.1.5",
+    "roderik/pwgen-php": "~0.1",
     "inblank/yii2-image": "~0.1"
   },
   "require-dev": {
@@ -28,12 +28,28 @@
     "codeception/specify": "~0.4",
     "codeception/verify": "~0.3"
   },
+  "repositories": [
+    {
+        "type": "composer",
+        "url": "https://asset-packagist.org"
+    }
+  ],
+  "config": {
+    "process-timeout": 1800,
+    "fxp-asset": {
+        "enabled": false
+    }
+  },
   "autoload": {
     "psr-4": {
       "inblank\\activeuser\\": ""
     }
   },
   "extra": {
+    "installer-types": [
+      "bower-asset",
+      "npm-asset"
+    ],
     "bootstrap": "inblank\\activeuser\\Bootstrap"
   }
 }
